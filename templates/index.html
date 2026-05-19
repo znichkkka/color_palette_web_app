@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Анализ цветовой палитры</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="page">
+    <nav class="navbar">
+        <a class="logo" href="/">Color Palette</a>
+
+        <div class="nav-actions">
+            {{ header_links }}
+        </div>
+    </nav>
+
+    <header class="header center">
+        <h1>Анализ цветовой палитры изображения</h1>
+
+        <p class="subtitle">
+            Загрузите изображение, выберите размер палитры, и приложение определит основные оттенки.
+        </p>
+    </header>
+
+    <main class="card upload-card">
+        {{ history_notice }}
+
+        <h2 class="upload-title">Загрузка изображения</h2>
+
+        <p class="upload-text">
+            Поддерживаются форматы JPG, PNG, GIF и WEBP. Максимальный размер файла – 20 МБ.
+        </p>
+
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="file-box">
+                <label class="file-label" for="image">
+                    <div class="file-label-content">
+                        <span id="file-label-title" class="file-label-title">
+                            Выберите изображение
+                        </span>
+
+                        <div id="file-name" class="file-name">
+                        JPG, PNG, GIF, WEBP
+                        </div>
+                    </div>
+                </label>
+
+                <input
+                    id="image"
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    required
+                    onchange="updateFileName(this)"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="colors_count">Количество цветов</label>
+
+                <select id="colors_count" name="colors_count">
+                    <option value="3">3 цвета</option>
+                    <option value="6" selected>6 цветов</option>
+                    <option value="9">9 цветов</option>
+                    <option value="12">12 цветов</option>
+                </select>
+            </div>
+
+            <button type="submit">
+                Проанализировать
+            </button>
+        </form>
+    </main>
+</div>
+
+<script>
+function updateFileName(input) {
+    const fileNameBlock = document.getElementById("file-name");
+    const titleBlock = document.getElementById("file-label-title");
+
+    if (input.files.length > 0) {
+        titleBlock.style.display = "none";
+        fileNameBlock.innerText = input.files[0].name;
+    } else {
+        titleBlock.style.display = "block";
+        fileNameBlock.innerText = "JPG, PNG, GIF, WEBP";
+    }
+}
+</script>
+</body>
+</html>

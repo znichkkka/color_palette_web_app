@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>История загрузок</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="page">
+    <nav class="navbar">
+        <a class="logo" href="/">Color Palette</a>
+
+        <div class="nav-actions">
+            {{ header_links }}
+        </div>
+    </nav>
+
+    <header class="header">
+        <h1>История загрузок</h1>
+
+        <p class="subtitle">
+            Здесь отображаются сохранённые результаты анализа изображений.
+        </p>
+    </header>
+
+    <main class="card">
+        <div class="history-list">
+            {{ rows }}
+        </div>
+    </main>
+
+    <div class="links">
+        <a href="/">Загрузить новое изображение</a>
+    </div>
+</div>
+
+<script>
+function deleteImage(imageId) {
+    if (!confirm("Удалить эту запись из истории?")) {
+        return;
+    }
+
+    fetch("/image?id=" + imageId, {
+        method: "DELETE"
+    }).then(function(response) {
+        if (response.status === 204) {
+            window.location.reload();
+        } else if (response.status === 401) {
+            window.location.href = "/login";
+        } else {
+            alert("Не удалось удалить запись");
+        }
+    }).catch(function() {
+        alert("Ошибка соединения с сервером");
+    });
+}
+</script>
+</body>
+</html>

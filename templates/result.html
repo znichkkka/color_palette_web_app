@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат анализа</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="page">
+    <nav class="navbar">
+        <a class="logo" href="/">Color Palette</a>
+
+        <div class="nav-actions">
+            {{ header_links }}
+        </div>
+    </nav>
+
+    <header class="header">
+        <h1>Результат анализа</h1>
+
+        <p class="subtitle">
+            Ниже показаны загруженное изображение и найденные доминирующие цвета.
+        </p>
+    </header>
+
+    {{ save_notice }}
+
+    <main class="result-layout">
+        <section class="card">
+            <img class="preview" src="{{ image_path }}" alt="Загруженное изображение">
+
+            <div class="file-info">
+                <div class="info-row">
+                    <span class="info-label">Имя файла</span>
+                    <span class="info-value">{{ filename }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Дата загрузки</span>
+                    <span class="info-value">{{ upload_date }}</span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label">Количество цветов</span>
+                    <span class="info-value">{{ colors_count }}</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="result-header">
+                <h2 class="section-title">Цветовая палитра</h2>
+
+                <a class="download-button small-download" href="/download_palette?id={{ image_id }}">
+                    Скачать PNG
+                </a>
+            </div>
+
+            <div class="form-group">
+                <label for="color_format">Формат отображения</label>
+
+                <select
+                    id="color_format"
+                    class="format-select"
+                    onchange="changeColorFormat()"
+                >
+                    <option value="hex" selected>HEX</option>
+                    <option value="rgb">RGB</option>
+                    <option value="hsl">HSL</option>
+                </select>
+            </div>
+
+            <div class="palette">
+                {{ colors }}
+            </div>
+
+            <p class="small-note">
+                Нажмите на цвет, чтобы скопировать его значение.
+            </p>
+        </section>
+    </main>
+
+    <div class="links">
+        <a href="/">Загрузить другое изображение</a>
+        <a href="/history">Открыть историю</a>
+    </div>
+</div>
+
+<script>
+function changeColorFormat() {
+    const selectedFormat = document.getElementById("color_format").value;
+    const colorItems = document.querySelectorAll(".color-item");
+
+    colorItems.forEach(function(item) {
+        const colorValue = item.getAttribute("data-" + selectedFormat);
+        const textElement = item.querySelector("span");
+
+        textElement.innerText = colorValue;
+        item.setAttribute("data-color", colorValue);
+    });
+}
+
+document.querySelectorAll(".color-item").forEach(function(item) {
+    item.addEventListener("click", function() {
+        const color = item.getAttribute("data-color");
+
+        navigator.clipboard.writeText(color).then(function() {
+            showToast("Скопировано: " + color);
+        });
+    });
+});
+
+function showToast(text) {
+    let toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = text;
+
+    document.body.appendChild(toast);
+
+    setTimeout(function() {
+        toast.classList.add("show");
+    }, 10);
+
+    setTimeout(function() {
+        toast.classList.remove("show");
+
+        setTimeout(function() {
+            toast.remove();
+        }, 300);
+    }, 1500);
+}
+</script>
+</body>
+</html>

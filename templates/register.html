@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="page">
+    <nav class="navbar">
+        <a class="logo" href="/">Color Palette</a>
+
+        <div class="nav-actions">
+            <a class="nav-link" href="/">Главная</a>
+            <a class="nav-button" href="/login">Войти</a>
+        </div>
+    </nav>
+
+    <header class="header center">
+        <h1>Регистрация</h1>
+
+        <p class="subtitle">
+            Создайте аккаунт, чтобы сохранять результаты анализа изображений.
+        </p>
+    </header>
+
+    <main class="card auth-card">
+        {{ error }}
+
+        <form action="/register" method="post">
+            <div class="form-group">
+                <label for="username">Логин</label>
+
+                <input
+                    id="username"
+                    type="text"
+                    name="username"
+                    placeholder="Например: user_123"
+                    autocomplete="username"
+                    minlength="3"
+                    maxlength="20"
+                    pattern="[A-Za-z][A-Za-z0-9_]{2,19}"
+                    required
+                >
+
+                <div class="input-help">
+                    3–20 символов, латинские буквы, цифры и _, первый символ – буква.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль</label>
+
+                <div class="password-field">
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        placeholder="Например: user12345"
+                        autocomplete="new-password"
+                        minlength="8"
+                        maxlength="20"
+                        pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}"
+                        required
+                    >
+
+                    <button
+                        class="password-toggle"
+                        type="button"
+                        onclick="togglePassword('password', this)"
+                        aria-label="Показать или скрыть пароль"
+                    >
+                        <svg
+                            class="eye-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M1 12C3.5 7 7 4 12 4s8.5 3 11 8c-2.5 5-6 8-11 8S3.5 17 1 12z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="input-help">
+                    8–20 символов, латинские буквы и цифры, минимум одна буква и одна цифра.
+                </div>
+            </div>
+
+            <button type="submit">
+                Зарегистрироваться
+            </button>
+        </form>
+
+        <div class="auth-hint">
+            Уже есть аккаунт?
+            <a href="/login">Войти</a>
+        </div>
+    </main>
+</div>
+
+<script>
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+
+    if (input.type === "password") {
+        input.type = "text";
+        button.classList.add("active");
+    } else {
+        input.type = "password";
+        button.classList.remove("active");
+    }
+}
+</script>
+</body>
+</html>

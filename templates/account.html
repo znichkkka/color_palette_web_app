@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Аккаунт</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="page">
+    <nav class="navbar">
+        <a class="logo" href="/">Color Palette</a>
+
+        <div class="nav-actions">
+            {{ header_links }}
+        </div>
+    </nav>
+
+    <header class="header">
+        <h1>Аккаунт</h1>
+
+        <p class="subtitle">
+            Здесь отображаются данные пользователя и действия с профилем.
+        </p>
+    </header>
+
+    <main class="account-layout">
+        <section class="card account-card">
+            <h2>Данные профиля</h2>
+
+            <div class="info-row">
+                <span class="info-label">Логин</span>
+                <span class="info-value">{{ username }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">Сохранённых результатов</span>
+                <span class="info-value">{{ images_count }}</span>
+            </div>
+        </section>
+
+        <section class="card account-card">
+            <h2>История</h2>
+
+            <p class="account-text">
+                В истории сохраняются результаты анализа изображений, загруженных после входа в аккаунт.
+            </p>
+
+            <div class="account-actions">
+                <a class="account-action" href="/history">Открыть историю</a>
+                <a class="account-action secondary" href="/">Загрузить изображение</a>
+            </div>
+        </section>
+
+        <section class="card account-card danger-zone">
+            <h2>Удаление аккаунта</h2>
+
+            <p>
+                При удалении аккаунта будут удалены все сохранённые результаты,
+                связанные изображения и активные сессии.
+            </p>
+
+            <button
+                class="delete-account-button"
+                type="button"
+                onclick="deleteAccount()"
+            >
+                Удалить аккаунт
+            </button>
+        </section>
+    </main>
+</div>
+
+<script>
+function deleteAccount() {
+    if (!confirm("Удалить аккаунт и всю историю загрузок? Это действие нельзя отменить.")) {
+        return;
+    }
+
+    fetch("/account", {
+        method: "DELETE"
+    }).then(function(response) {
+        if (response.status === 204) {
+            window.location.href = "/";
+        } else if (response.status === 401) {
+            window.location.href = "/login";
+        } else {
+            alert("Не удалось удалить аккаунт");
+        }
+    }).catch(function() {
+        alert("Ошибка соединения с сервером");
+    });
+}
+</script>
+</body>
+</html>
