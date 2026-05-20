@@ -1,15 +1,10 @@
 import socket
 from threading import Thread
 
+from config import HOST, PORT, BUFFER_SIZE, BACKLOG
 from http_utils import parse_http_request, create_response
 from router import handle_request
 from logger import log_request, log_error
-
-
-HOST = "127.0.0.1"
-PORT = 8080
-BUFFER_SIZE = 4096
-BACKLOG = 10
 
 
 def read_request(client_socket):
@@ -31,7 +26,11 @@ def read_request(client_socket):
     if headers_end == -1:
         return request_data
 
-    headers_text = request_data[:headers_end].decode("utf-8", errors="ignore")
+    headers_text = request_data[:headers_end].decode(
+        "utf-8",
+        errors="ignore"
+    )
+
     body = request_data[headers_end + 4:]
 
     content_length = get_content_length(headers_text)
@@ -65,7 +64,10 @@ def get_status_code(response):
     first_line = response.split(b"\r\n", 1)[0]
 
     try:
-        parts = first_line.decode("utf-8", errors="ignore").split()
+        parts = first_line.decode(
+            "utf-8",
+            errors="ignore"
+        ).split()
 
         if len(parts) >= 2:
             return parts[1]
@@ -100,7 +102,11 @@ def handle_client(client_socket, address):
         request = parse_http_request(request_data)
 
         if request is None:
-            send_error_response(client_socket, 400, "Bad Request")
+            send_error_response(
+                client_socket,
+                400,
+                "Bad Request"
+            )
 
             log_request(
                 address[0],
@@ -112,6 +118,7 @@ def handle_client(client_socket, address):
             return
 
         response = handle_request(request)
+
         status_code = get_status_code(response)
 
         log_request(
@@ -124,7 +131,9 @@ def handle_client(client_socket, address):
         client_socket.sendall(response)
 
     except Exception as error:
-        log_error("Ошибка обработки запроса: " + str(error))
+        log_error(
+            "Ошибка обработки запроса: " + str(error)
+        )
 
         send_error_response(
             client_socket,
@@ -140,9 +149,17 @@ def handle_client(client_socket, address):
 
 
 def start_server():
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket = socket.socket(
+        socket.AF_INET,
+        socket.SOCK_STREAM
+    )
 
-    server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server_socket.setsockopt(
+        socket.SOL_SOCKET,
+        socket.SO_REUSEADDR,
+        1
+    )
+
     server_socket.bind((HOST, PORT))
     server_socket.listen(BACKLOG)
 

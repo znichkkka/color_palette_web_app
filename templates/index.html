@@ -32,7 +32,9 @@
             Поддерживаются форматы JPG, PNG, GIF и WEBP. Максимальный размер файла – 20 МБ.
         </p>
 
-        <form action="/upload" method="post" enctype="multipart/form-data">
+        <div id="upload-error" class="form-error" style="display: none;"></div>
+
+        <form id="upload-form" enctype="multipart/form-data">
             <div class="file-box">
                 <label class="file-label" for="image">
                     <div class="file-label-content">
@@ -41,7 +43,7 @@
                         </span>
 
                         <div id="file-name" class="file-name">
-                        JPG, PNG, GIF, WEBP
+                            JPG, PNG, GIF, WEBP
                         </div>
                     </div>
                 </label>
@@ -67,7 +69,7 @@
                 </select>
             </div>
 
-            <button type="submit">
+            <button id="upload-button" type="submit">
                 Проанализировать
             </button>
         </form>
@@ -87,6 +89,42 @@ function updateFileName(input) {
         fileNameBlock.innerText = "JPG, PNG, GIF, WEBP";
     }
 }
+
+document.getElementById("upload-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const form = document.getElementById("upload-form");
+    const button = document.getElementById("upload-button");
+    const errorBlock = document.getElementById("upload-error");
+
+    errorBlock.style.display = "none";
+    errorBlock.innerText = "";
+
+    button.disabled = true;
+    button.innerText = "Обработка...";
+
+    const formData = new FormData(form);
+
+    fetch("/api/images", {
+        method: "POST",
+        body: formData
+    }).then(function(response) {
+        return response.json();
+    }).then(function(data) {
+        if (data.success) {
+            window.location.href = data.image.result_url;
+        } else {
+            errorBlock.innerText = data.error;
+            errorBlock.style.display = "block";
+        }
+    }).catch(function() {
+        errorBlock.innerText = "Ошибка соединения с сервером";
+        errorBlock.style.display = "block";
+    }).finally(function() {
+        button.disabled = false;
+        button.innerText = "Проанализировать";
+    });
+});
 </script>
 </body>
 </html>

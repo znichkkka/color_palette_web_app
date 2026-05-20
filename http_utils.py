@@ -1,4 +1,5 @@
 from urllib.parse import urlparse, parse_qs
+import json
 
 
 class HttpRequest:
@@ -27,14 +28,14 @@ def parse_http_request(request_data):
     if len(lines) == 0:
         return None
 
-    request_data_parts = lines[0].split()
+    request_line = lines[0].split()
 
-    if len(request_data_parts) != 3:
+    if len(request_line) != 3:
         return None
 
-    method = request_data_parts[0].upper()
-    target = request_data_parts[1]
-    version = request_data_parts[2]
+    method = request_line[0].upper()
+    target = request_line[1]
+    version = request_line[2]
 
     parsed_url = urlparse(target)
     path = parsed_url.path
@@ -114,6 +115,29 @@ def create_response_headers(body, content_type, extra_headers):
     return headers
 
 
+def json_response(status_code, status_text, data, extra_headers=None):
+    body = json.dumps(data, ensure_ascii=False)
+
+    return create_response(
+        status_code,
+        status_text,
+        body,
+        "application/json; charset=utf-8",
+        extra_headers
+    )
+
+
+def json_error(status_code, status_text, message):
+    return json_response(
+        status_code,
+        status_text,
+        {
+            "success": False,
+            "error": message
+        }
+    )
+
+
 def redirect(location, extra_headers=None):
     return create_response(
         303,
@@ -142,6 +166,20 @@ def method_not_allowed(allowed_methods):
         "Method Not Allowed",
         "<h1>405 Method Not Allowed</h1><p>Метод не поддерживается для этого адреса</p>",
         "text/html; charset=utf-8",
+        {
+            "Allow": ", ".join(allowed_methods)
+        }
+    )
+
+
+def json_method_not_allowed(allowed_methods):
+    return json_response(
+        405,
+        "Method Not Allowed",
+        {
+            "success": False,
+            "error": "Метод не поддерживается для этого ресурса"
+        },
         {
             "Allow": ", ".join(allowed_methods)
         }

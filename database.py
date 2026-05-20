@@ -332,6 +332,33 @@ def delete_image(image_id, user_id):
 
     return filepath
 
+def delete_all_user_images(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT filepath
+        FROM images
+        WHERE user_id = ?
+    """, (user_id,))
+
+    rows = cursor.fetchall()
+
+    cursor.execute("""
+        DELETE FROM images
+        WHERE user_id = ?
+    """, (user_id,))
+
+    conn.commit()
+    conn.close()
+
+    filepaths = []
+
+    for row in rows:
+        filepaths.append(row[0])
+
+    return filepaths
+
 
 def get_user_image_paths(user_id):
     conn = get_connection()
